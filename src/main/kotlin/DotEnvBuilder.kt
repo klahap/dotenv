@@ -12,12 +12,11 @@ public class DotEnvBuilder {
     private var minor = 0
     private val envVariables = mutableListOf<Pair<EnvMap, Priority>>()
     private var _systemEnvPriority = Priority(major = 0, minor = 0)
-    private var systemEnvMinorPriority = 0
 
     public var addSystemEnv: Boolean = false
     public var systemEnvPriority: Int
         get() = _systemEnvPriority.major
-        set(value: Int) {
+        set(value) {
             _systemEnvPriority = getPrio(major = value)
         }
 
