@@ -29,9 +29,7 @@ Here's how you can use the `Dotenv` plugin in your Kotlin project:
 
 ```kotlin
 val envVariables: Map<String, String> = dotEnv {
-    addSystemEnv = true // default = false
-    systemEnvPriority = 0 // default = 0
-
+    addSystemEnv()
     addFile(".env1")
     addFile(".env2", priority = -1)
     addEnv("MY_ENV_VAR", "hello world")
@@ -69,7 +67,6 @@ Using the plugin as follows:
 
 ```kotlin
 dotEnv {
-    addSystemEnv = false
     addFile(".env1")
     addFile(".env2") // .env2 overwrites variables from .env1
 } 
@@ -81,7 +78,6 @@ dotEnv {
 
 
 dotEnv {
-    addSystemEnv = false
     addFile(".env1", priority = 1)
     addFile(".env2") // .env2 does not overwrite anything because of lower priority (default priority = 0)
 }

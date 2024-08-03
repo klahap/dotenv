@@ -9,16 +9,12 @@ import kotlin.io.path.readLines
 
 
 public class DotEnvBuilder {
-    private var minor = 0
+    private var currentMinor = 0
     private val envVariables = mutableListOf<Pair<EnvMap, Priority>>()
-    private var _systemEnvPriority = Priority(major = 0, minor = 0)
 
-    public var addSystemEnv: Boolean = false
-    public var systemEnvPriority: Int
-        get() = _systemEnvPriority.major
-        set(value) {
-            _systemEnvPriority = getPrio(major = value)
-        }
+    public fun addSystemEnv(priority: Int = 0) {
+        envVariables.add(systemEnv to getPrio(priority))
+    }
 
     public fun addFile(path: String, priority: Int = 0): Unit = addFile(Path(path), priority = priority)
     public fun addFile(file: File, priority: Int = 0): Unit = addFile(file.path, priority = priority)
@@ -36,13 +32,9 @@ public class DotEnvBuilder {
         envVariables.add(envMap to getPrio(priority))
     }
 
-    private fun getPrio(major: Int) = Priority(major = major, minor = minor++)
+    private fun getPrio(major: Int) = Priority(major = major, minor = currentMinor++)
 
-    private fun build() = buildList {
-        if (addSystemEnv)
-            add(systemEnv to Priority(0, 0))
-        addAll(envVariables)
-    }.merge().entries.associate { it.key.key to it.value.value }
+    private fun build() = envVariables.merge().entries.associate { it.key.key to it.value.value }
 
 
     @JvmInline
