@@ -16,6 +16,12 @@ public class DotEnvBuilder {
         envVariables.add(systemEnv to getPrio(priority))
     }
 
+    public fun addSystemEnv(name: String, priority: Int = 0): Boolean {
+        val value = System.getenv(name) ?: return false
+        addEnv(key = name, value = value, priority = priority)
+        return true
+    }
+
     public fun addFile(path: String, priority: Int = 0): Unit = addFile(Path(path), priority = priority)
     public fun addFile(file: File, priority: Int = 0): Unit = addFile(file.path, priority = priority)
 

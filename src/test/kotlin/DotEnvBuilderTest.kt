@@ -3,6 +3,7 @@ import io.kotest.assertions.throwables.shouldThrowExactly
 import io.kotest.matchers.ints.shouldBeGreaterThan
 import io.kotest.matchers.maps.shouldContainExactly
 import io.kotest.matchers.maps.shouldHaveSize
+import io.kotest.matchers.shouldBe
 import java.io.FileNotFoundException
 import kotlin.io.path.Path
 import kotlin.test.Test
@@ -16,6 +17,16 @@ class DotEnvBuilderTest {
     @Test
     fun `test system env`() {
         dotEnv { addSystemEnv() }.size shouldBeGreaterThan 0
+    }
+
+    @Test
+    fun `test single system env`() {
+        dotEnv {
+            addSystemEnv("PATH") shouldBe true
+        } shouldContainExactly mapOf("PATH" to System.getenv("PATH"))
+        dotEnv {
+            addSystemEnv("NOT_EXIST_ENV_123") shouldBe false
+        } shouldContainExactly emptyMap()
     }
 
     @Test
