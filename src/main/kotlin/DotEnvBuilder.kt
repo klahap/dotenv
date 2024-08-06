@@ -30,6 +30,18 @@ public class DotEnvBuilder {
         envVariables.add(envMap to getPrio(priority))
     }
 
+    public fun addFileIfExists(path: String, priority: Int = 0): Boolean =
+        addFileIfExists(Path(path), priority = priority)
+
+    public fun addFileIfExists(file: File, priority: Int = 0): Boolean =
+        addFileIfExists(file.path, priority = priority)
+
+    public fun addFileIfExists(path: Path, priority: Int = 0): Boolean {
+        if (!path.exists()) return false
+        addFile(path, priority = priority)
+        return true
+    }
+
     public fun addEnv(key: String, value: String, priority: Int = 0): Unit =
         addEnvs(mapOf(key to value), priority = priority)
 

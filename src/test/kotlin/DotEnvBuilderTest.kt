@@ -37,6 +37,35 @@ class DotEnvBuilderTest {
     }
 
     @Test
+    fun `test addFileIfExists not exists`() {
+        val expectedResult = mapOf(
+            "foobar1" to "hello world",
+            "foobar2" to "hello world",
+            "foobar3" to "hello world",
+            "foobar4" to "hello world",
+            "foobarA" to "hello",
+        )
+        dotEnv {
+            addFileIfExists(Path("./not-exists.env")) shouldBe false
+        } shouldContainExactly emptyMap()
+        dotEnv {
+            addFileIfExists(Path("./not-exists.env").toFile()) shouldBe false
+        } shouldContainExactly emptyMap()
+        dotEnv {
+            addFileIfExists("./not-exists.env") shouldBe false
+        } shouldContainExactly emptyMap()
+        dotEnv {
+            addFileIfExists(pathA) shouldBe true
+        } shouldContainExactly expectedResult
+        dotEnv {
+            addFileIfExists(pathA.toFile()) shouldBe true
+        } shouldContainExactly expectedResult
+        dotEnv {
+            addFileIfExists(pathA.toString()) shouldBe true
+        } shouldContainExactly expectedResult
+    }
+
+    @Test
     fun `test env file`() {
         val expectedResult = mapOf(
             "foobar1" to "hello world",
