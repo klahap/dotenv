@@ -52,7 +52,8 @@ public class DotEnvBuilder {
 
     private fun getPrio(major: Int) = Priority(major = major, minor = currentMinor++)
 
-    private fun build() = envVariables.merge().entries.associate { it.key.key to it.value.value }
+    private fun build(): DotEnv =
+        envVariables.merge().entries.associate { it.key.key to it.value.value }.let { DotEnv(it) }
 
 
     @JvmInline
@@ -71,7 +72,7 @@ public class DotEnvBuilder {
     }
 
     public companion object {
-        public fun dotEnv(block: DotEnvBuilder.() -> Unit): Map<String, String> = DotEnvBuilder().apply(block).build()
+        public fun dotEnv(block: DotEnvBuilder.() -> Unit): DotEnv = DotEnvBuilder().apply(block).build()
 
         private val systemEnv
             get() = System.getenv().map { EnvKey(it.key) to EnvValue(it.value) }.let { EnvMap(it.toMap()) }
@@ -88,11 +89,13 @@ public class DotEnvBuilder {
             return readLines()
                 .map { it.trim() }
                 .filter { it.isNotBlank() && !it.startsWith('#') && it.contains('=') }
-                .associate {
-                    val key = EnvKey(it.substringBefore('=').trim())
-                    val value = it.substringAfter('=').trim().unescapeEnvVar()
-                    key to value
-                }.let { EnvMap(it) }
+                .mapNotNull { line ->
+                    val key = line.substringBefore('=').trim()
+                        .takeIf { it.isNotBlank() } ?: return@mapNotNull null
+                    val value = line.substringAfter('=').trim()
+                        .takeIf { it.isNotBlank() }?.unescapeEnvVar() ?: return@mapNotNull null
+                    EnvKey(key) to value
+                }.toMap().let { EnvMap(it) }
         }
 
         private fun String.unescapeEnvVar(): EnvValue {

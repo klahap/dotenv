@@ -20,6 +20,18 @@ class DotEnvBuilderTest {
     }
 
     @Test
+    fun `test DotEnv map`() {
+        val result = dotEnv {
+            addFileIfExists(pathA) shouldBe true
+        }
+        shouldThrowExactly<NoSuchElementException> {
+            result.getOrThrow("foobar")
+        }
+        result.getOrThrow("foobar1") shouldBe "hello world"
+        result.getOrThrow("foobarA") shouldBe "hello"
+    }
+
+    @Test
     fun `test single system env`() {
         dotEnv {
             addSystemEnv("PATH") shouldBe true
