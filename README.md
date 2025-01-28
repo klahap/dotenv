@@ -23,69 +23,30 @@ plugins {
 }
 ```
 
-## Usage
+## Example `build.gradle.kts`
 
-Here's how you can use the `Dotenv` plugin in your Kotlin project:
+Assume you have a `.env` files:
 
-```kotlin
-val envVariables: Map<String, String> = dotEnv {
-    addSystemEnv()
-    addFile(".env1")
-    addFile(".env2", priority = -1)
-    addEnv("MY_ENV_VAR", "hello world")
-    addEnvs(
-        mapOf(
-            "ANOTHER_ENV_VAR" to "hi",
-        ),
-        priority = -2,
-    )
-}
+**.env**
 ```
-
-### Priority
-
-The priority determines the order in which the environment variables are loaded. Variables from files or entries with a higher priority (numerically greater) will override those with a lower priority.
-
-## Example
-
-Assume you have two `.env` files:
-
-**.env1**
-```
-# this is a comment
 foobar=hello world
-foobarA=hello
-```
-
-**.env2**
-```
-foobar=howdy guys
-foobarB=howdy
 ```
 
 Using the plugin as follows:
 
 ```kotlin
-dotEnv {
-    addFile(".env1")
-    addFile(".env2") // .env2 overwrites variables from .env1
-} 
-/* Result:
-    foobar  -> howdy guys
-    foobarA -> hello
-    foobarB -> howdy
-*/
+import io.github.klahap.dotenv.DotEnvBuilder
 
-
-dotEnv {
-    addFile(".env1", priority = 1)
-    addFile(".env2") // .env2 does not overwrite anything because of lower priority (default priority = 0)
+val envVars = DotEnvBuilder.dotEnv {
+    // addSystemEnv()
+    addFile("$rootDir/.env")
 }
-/* Result:
-    foobar  -> hello world
-    foobarA -> hello
-    foobarB -> howdy
-*/
+
+envVars.get("foobar") // = null
+envVars.getOrThrow("foobar") // = "hello world"
+
+envVars.get("test") // = null
+envVars.getOrThrow("test") // ERROR
 ```
 
 ## License
